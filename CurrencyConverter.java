@@ -3,9 +3,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Scanner;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class CurrencyConverter {
     public static void main(String[] args) {
+
+        double exchangeRate = 32.109324;
 
         try {
             String url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
@@ -16,8 +20,10 @@ public class CurrencyConverter {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String json = response.body();
-            System.out.println("Raw JSON:");
-            System.out.println(json);
+
+            JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
+            JsonObject eur = obj.getAsJsonObject("usd");
+            exchangeRate = eur.get("thb").getAsDouble();            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -28,7 +34,6 @@ public class CurrencyConverter {
 
         String curAlphaName = "usd";
         String curBetaName = "thb";
-        double exchangeRate = 32.109324;
 
         boolean run = true;
         while (run) {
@@ -40,7 +45,7 @@ public class CurrencyConverter {
                 System.out.printf("\nInput Currency : %s\nOutput Currency : %s\nExchange Rate : %.2f\n", curAlphaName, curBetaName, exchangeRate);
             }
             else if (option == 2){
-                System.out.print("\nEnter your desired amount : ");
+                System.out.printf("\nEnter your amount in %s : ", curAlphaName);
                 double amount = scanner.nextDouble();
                 System.out.print("");
                 double newAmount = amount * exchangeRate;
