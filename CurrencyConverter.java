@@ -1,32 +1,52 @@
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Scanner;
 
 public class CurrencyConverter {
     public static void main(String[] args) {
 
+        try {
+            String url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
+            System.out.println("Raw JSON:");
+            System.out.println(json);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         Scanner scanner = new Scanner(System.in);
 
-        String curAlphaName = "USD";
-        String curBetaName = "THB";
-        double curAlphaStr = 1.0;
-        double curBetaStr = 0.031;
+        String curAlphaName = "usd";
+        String curBetaName = "thb";
+        double exchangeRate = 32.109324;
 
         boolean run = true;
         while (run) {
-            System.out.print("\n(1) View Settings\n(2) Convert\n(3) Exit\n Choose Option : ");
+            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n Choose Option : ");
             int option = scanner.nextInt();
             System.out.print("");
 
             if (option == 1){
-                System.out.printf("\nInput Currency : %s\nOutput Currency : %s\nRate : %.2f\n", curAlphaName, curBetaName, (curAlphaStr/curBetaStr));
+                System.out.printf("\nInput Currency : %s\nOutput Currency : %s\nExchange Rate : %.2f\n", curAlphaName, curBetaName, exchangeRate);
             }
             else if (option == 2){
                 System.out.print("\nEnter your desired amount : ");
                 double amount = scanner.nextDouble();
                 System.out.print("");
-                double newAmount = amount / curBetaStr;
+                double newAmount = amount * exchangeRate;
                 System.out.printf("\n%.2f %s is equivalent to %.2f %s\n", amount, curAlphaName, newAmount, curBetaName);
             }
-            else if (option == 3){
+            else if (option == 0){
                 run = false;
             }
             else {
