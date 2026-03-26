@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 public class CurrencyConverter {
     public static void main(String[] args) {
 
+        JsonObject usd = null;
         double exchangeRate = 32.109324;
 
         try {
@@ -22,8 +23,9 @@ public class CurrencyConverter {
             String json = response.body();
 
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
-            JsonObject eur = obj.getAsJsonObject("usd");
-            exchangeRate = eur.get("thb").getAsDouble();            
+            usd = obj.getAsJsonObject("usd");
+            // System.out.print(obj);
+            exchangeRate = usd.get("thb").getAsDouble();            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +39,7 @@ public class CurrencyConverter {
 
         boolean run = true;
         while (run) {
-            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n Choose Option : ");
+            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n(3) Change 2nd Currency\n Choose Option : ");
             int option = scanner.nextInt();
             System.out.print("");
 
@@ -50,6 +52,22 @@ public class CurrencyConverter {
                 System.out.print("");
                 double newAmount = amount * exchangeRate;
                 System.out.printf("\n%.2f %s is equivalent to %.2f %s\n", amount, curAlphaName, newAmount, curBetaName);
+            }
+            else if (option == 3){
+                boolean choosingCurrency = true;
+                while (choosingCurrency) {
+                    System.out.printf("\nCurrent Currency : %s ", curBetaName);
+                    System.out.print("\nEnter currency code : ");
+                    scanner.nextLine();
+                    String chosenCurrency = scanner.nextLine();
+                    try {
+                        exchangeRate = usd.get(chosenCurrency).getAsDouble();
+                        curBetaName = chosenCurrency;
+                        choosingCurrency = false;
+                    } catch (Exception e) {
+                        System.out.println("\nThis Current doesn't exist!");
+                    }
+                }
             }
             else if (option == 0){
                 run = false;
