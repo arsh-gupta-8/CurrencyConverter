@@ -12,26 +12,6 @@ public class CurrencyConverter {
         JsonObject usd = null;
         double exchangeRate = 32.109324;
 
-        try {
-            String url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String json = response.body();
-
-            JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
-            usd = obj.getAsJsonObject("usd");
-            // System.out.print(obj);
-            exchangeRate = usd.get("thb").getAsDouble();            
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         Scanner scanner = new Scanner(System.in);
 
         String curAlphaName = "usd";
@@ -54,20 +34,7 @@ public class CurrencyConverter {
                 System.out.printf("\n%.2f %s is equivalent to %.2f %s\n", amount, curAlphaName, newAmount, curBetaName);
             }
             else if (option == 3){
-                boolean choosingCurrency = true;
-                while (choosingCurrency) {
-                    System.out.printf("\nCurrent Currency : %s ", curBetaName);
-                    System.out.print("\nEnter currency code : ");
-                    scanner.nextLine();
-                    String chosenCurrency = scanner.nextLine();
-                    try {
-                        exchangeRate = usd.get(chosenCurrency).getAsDouble();
-                        curBetaName = chosenCurrency;
-                        choosingCurrency = false;
-                    } catch (Exception e) {
-                        System.out.println("\nThis Current doesn't exist!");
-                    }
-                }
+                
             }
             else if (option == 0){
                 run = false;
@@ -79,4 +46,53 @@ public class CurrencyConverter {
 
         scanner.close();
     }
+
+    // static void main(String curExchangeCode) {
+        
+    //     Scanner scanner = new Scanner(System.in);
+    //     String newExchangeRate;
+    //     String currencyCode;
+
+    //     do {
+    //         System.out.printf("\nCurrent Currency : %s ", curExchangeCode);
+    //         System.out.print("\nEnter currency code : ");
+    //         scanner.nextLine();
+    //         String chosenCurrency = scanner.nextLine();
+    //         try {
+    //             newExchangeRate = usd.get(chosenCurrency).getAsDouble();
+    //             curBetaName = chosenCurrency;
+    //         } catch (Exception e) {
+    //             System.out.println("\nThis Current doesn't exist!");
+    //         }
+    //     } while (choosingCurrency);
+    //     scanner.close();
+    
+    static double getRate(String cur1, String cur2) {
+
+        try {
+            String url = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/" + cur1 + ".json";
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
+
+            JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
+            JsonObject cur = obj.getAsJsonObject(cur1);
+            // System.out.print(obj);
+            Double exchangeRate = cur.get(cur2).getAsDouble();
+
+            return exchangeRate;
+
+        } catch(Exception e) {
+
+            return -1;
+
+        }
+            
+        
+    }
+
 }
