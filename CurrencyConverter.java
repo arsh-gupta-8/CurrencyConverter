@@ -9,17 +9,15 @@ import com.google.gson.JsonParser;
 public class CurrencyConverter {
     public static void main(String[] args) {
 
-        JsonObject usd = null;
-        double exchangeRate = 32.109324;
-
         Scanner scanner = new Scanner(System.in);
 
         String curAlphaName = "usd";
         String curBetaName = "thb";
+        double exchangeRate = getRate(curAlphaName, curBetaName);
 
         boolean run = true;
         while (run) {
-            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n(3) Change 2nd Currency\n Choose Option : ");
+            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n(3) Change 1st Currency\n(4) Change 2nd Currency\n Choose Option : ");
             int option = scanner.nextInt();
             System.out.print("");
 
@@ -33,8 +31,38 @@ public class CurrencyConverter {
                 double newAmount = amount * exchangeRate;
                 System.out.printf("\n%.2f %s is equivalent to %.2f %s\n", amount, curAlphaName, newAmount, curBetaName);
             }
-            else if (option == 3){
+            else if (option == 3 || option == 4){
                 
+                switch (option) {
+                    case 3 -> System.out.printf("\nCurrent Currency : %s ", curAlphaName);
+                    case 4 -> System.out.printf("\nCurrent Currency : %s ", curBetaName);
+                }
+
+                System.out.print("\nEnter currency code (or S to continue current one) : ");
+                scanner.nextLine();
+                String userCurrency = scanner.nextLine().toLowerCase();
+
+                double newExchangeRate = getRate(userCurrency, curBetaName);
+
+                while (newExchangeRate == -1.0 && !(userCurrency.charAt(0) == 's' && userCurrency.length() == 1)) {
+                    System.out.println("Invalid currency. Choose another one!");
+                    System.out.print("\nEnter currency code (or S to continue current one) : ");
+
+                    userCurrency = scanner.nextLine().toLowerCase();
+                    switch (option) {
+                        case 3 -> newExchangeRate = getRate(userCurrency, curBetaName);
+                        case 4 -> newExchangeRate = getRate(curAlphaName, userCurrency);
+                    }
+                    
+                }
+
+                if (newExchangeRate != -1.0) {
+                    switch (option) {
+                        case 3 -> curAlphaName = userCurrency;
+                        case 4 -> curBetaName = userCurrency;
+                    }
+                    exchangeRate = newExchangeRate;
+                }
             }
             else if (option == 0){
                 run = false;
@@ -47,25 +75,7 @@ public class CurrencyConverter {
         scanner.close();
     }
 
-    // static void main(String curExchangeCode) {
-        
-    //     Scanner scanner = new Scanner(System.in);
-    //     String newExchangeRate;
-    //     String currencyCode;
 
-    //     do {
-    //         System.out.printf("\nCurrent Currency : %s ", curExchangeCode);
-    //         System.out.print("\nEnter currency code : ");
-    //         scanner.nextLine();
-    //         String chosenCurrency = scanner.nextLine();
-    //         try {
-    //             newExchangeRate = usd.get(chosenCurrency).getAsDouble();
-    //             curBetaName = chosenCurrency;
-    //         } catch (Exception e) {
-    //             System.out.println("\nThis Current doesn't exist!");
-    //         }
-    //     } while (choosingCurrency);
-    //     scanner.close();
     
     static double getRate(String cur1, String cur2) {
 
@@ -81,17 +91,25 @@ public class CurrencyConverter {
 
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
             JsonObject cur = obj.getAsJsonObject(cur1);
+            System.out.print(cur);
             // System.out.print(obj);
             Double exchangeRate = cur.get(cur2).getAsDouble();
 
             return exchangeRate;
 
         } catch(Exception e) {
-
             return -1;
-
         }
             
+    }
+
+    static String getCurrencyInput(String current) {
+        Scanner currencyInput = new Scanner(System.in);
+
+        String userCurrency = currencyInput.nextLine();
+        currencyInput.close();
+        return userCurrency;
+
         
     }
 
