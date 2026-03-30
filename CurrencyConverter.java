@@ -17,7 +17,7 @@ public class CurrencyConverter {
 
         boolean run = true;
         while (run) {
-            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n(3) Change 1st Currency\n(4) Change 2nd Currency\n Choose Option : ");
+            System.out.print("\n(0) Exit\n(1) View Settings\n(2) Convert\n(3) Change 1st Currency\n(4) Change 2nd Currency\n(5) Swap Currencies\n Choose Option : ");
             int option = scanner.nextInt();
             System.out.print("");
 
@@ -64,6 +64,12 @@ public class CurrencyConverter {
                     exchangeRate = newExchangeRate;
                 }
             }
+            else if (option == 5){
+                String temp = curAlphaName;
+                curAlphaName = curBetaName;
+                curBetaName = temp;
+                exchangeRate = 1 / exchangeRate;
+            }
             else if (option == 0){
                 run = false;
             }
@@ -91,8 +97,6 @@ public class CurrencyConverter {
 
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
             JsonObject cur = obj.getAsJsonObject(cur1);
-            System.out.print(cur);
-            // System.out.print(obj);
             Double exchangeRate = cur.get(cur2).getAsDouble();
 
             return exchangeRate;
